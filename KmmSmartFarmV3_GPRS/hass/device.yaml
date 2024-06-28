@@ -1,0 +1,117 @@
+switch:
+  - unique_id: gcckmm1_13097652_valve1
+    name: "gcckmm1 valve 1"
+    state_topic: "gcckmm1/switchs/13097652/valve1/state"
+    command_topic: "gcckmm1/switchs/13097652/valve1/set"
+    payload_on: "ON"
+    payload_off: "OFF"
+    state_on: "ON"
+    state_off: "OFF"
+    optimistic: false
+    qos: 0
+    retain: true
+  - unique_id: gcckmm1_13097652_valve2
+    name: "gcckmm1 valve 2"
+    state_topic: "gcckmm1/switchs/13097652/valve2/state"
+    command_topic: "gcckmm1/switchs/13097652/valve2/set"
+    payload_on: "ON"
+    payload_off: "OFF"
+    state_on: "ON"
+    state_off: "OFF"
+    optimistic: false
+    qos: 0
+    retain: true
+  - unique_id: gcckmm1_13097652_valve3
+    name: "gcckmm1 valve 3"
+    state_topic: "gcckmm1/switchs/13097652/valve3/state"
+    command_topic: "gcckmm1/switchs/13097652/valve3/set"
+    payload_on: "ON"
+    payload_off: "OFF"
+    state_on: "ON"
+    state_off: "OFF"
+    optimistic: false
+    qos: 0
+    retain: true
+  - unique_id: gcckmm1_13097652_valve4
+    name: "gcckmm1 valve 4"
+    state_topic: "gcckmm1/switchs/13097652/valve4/state"
+    command_topic: "gcckmm1/switchs/13097652/valve4/set"
+    payload_on: "ON"
+    payload_off: "OFF"
+    state_on: "ON"
+    state_off: "OFF"
+    optimistic: false
+    qos: 0
+    retain: true
+
+sensor:
+  - unique_id: gcckmm1_13097652_air_temperature
+    name: "gcckmm1 Air Temperature"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "°C"
+    value_template: "{{ value_json.air_temperature }}"
+  - unique_id: gcckmm1_13097652_air_humidity
+    name: "gcckmm1 Air Humidity"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "%"
+    value_template: "{{ value_json.air_humidity }}"
+  - unique_id: gcckmm1_13097652_lux
+    name: "gcckmm1 Lux"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "%"
+    value_template: "{{ value_json.lux }}"
+  - unique_id: gcckmm1_13097652_soil_humidity
+    name: "gcckmm1 Soil Humidity"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "%"
+    value_template: "{{ value_json.soil_humidity }}"
+  - unique_id: gcckmm1_13097652_soil_temperature
+    name: "gcckmm1 Soil Temperature"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "°C"
+    value_template: "{{ value_json.soil_temperature }}" 
+  - unique_id: gcckmm1_13097652_ecowitt_light
+    name: "gcckmm1 Ecowitt Ligh"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "Lux"
+    value_template: "{{ value_json.Light }}" 
+  - unique_id: gcckmm1_13097652_ecowitt_temperature
+    name: "gcckmm1 Soil Ecowit Temperature"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "°C%"
+    value_template: "{{ value_json.Temperature }}" 
+  - unique_id: gcckmm1_13097652_ecowitt_humidity
+    name: "gcckmm1 Soil Ecowit Humidity"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "%Rh"
+    value_template: "{{ value_json.Humidity }}" 
+  - unique_id: gcckmm1_13097652_ecowitt_windspeed
+    name: "gcckmm1 Soil Ecowit Windspeed"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "m/s"
+    value_template: "{{ value_json.Windspeed }}" 
+  - unique_id: gcckmm1_13097652_ecowitt_gustspeed
+    name: "gcckmm1 Soil Ecowit Gustspeed"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "m/s"
+    value_template: "{{ value_json.Gustspeed }}" 
+  - unique_id: gcckmm1_13097652_ecowitt_winddirection
+    name: "gcckmm1 Soil Ecowit WindDirection"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "degree"
+    value_template: "{{ value_json.WindDirection }}" 
+  - unique_id: gcckmm1_13097652_ecowitt_rainfall
+    name: "gcckmm1 Soil Ecowit Rainfall"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "mm"
+    value_template: "{{ value_json.Rainfall}}" 
+  - unique_id: gcckmm1_13097652_ecowitt_press
+    name: "gcckmm1 Soil Ecowit Pressure"
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "hPa"
+    value_template: "{{ value_json.Pressure}}" 
+  - unique_id: gcckmm1_13097652_ecowitt_uvindex
+    name: "gcckmm1 Soil Ecowit UVIndex "
+    state_topic: "gcckmm1/sensors/13097652/state"
+    unit_of_measurement: "uvi"
+    value_template: "{{ value_json.UVIndex}}" 
