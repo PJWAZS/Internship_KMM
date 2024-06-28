@@ -1,6 +1,7 @@
 #include <ArduinoJson.h>
 #include <Simpletimer.h>
-//
+#include <Preferences.h>
+
 #include "komomiconnect.hpp"
 #include "blynkconnect.hpp"
 #include "tbconnect.hpp"
@@ -8,8 +9,8 @@
 #include "kmm_lightsensors.hpp"
 #include "kmm_sht4x.hpp"
 
-//
 Simpletimer timer1{};
+Preferences preferences;
 
 // ***** GPIO PIN SETUP *****
 #define RLY1    17  // Set Relay1 pin GPIO 17
@@ -32,60 +33,78 @@ volatile bool relay4State = false;
 #define ON  LOW
 #define OFF HIGH 
 
+void saveRelayState() {
+  preferences.begin("relay-states", false);
+  preferences.putBool("relay1State", relay1State);
+  preferences.putBool("relay2State", relay2State);
+  preferences.putBool("relay3State", relay3State);
+  preferences.putBool("relay4State", relay4State);
+  preferences.end();
+}
+
+void loadRelayState() {
+  preferences.begin("relay-states", true);
+  relay1State = preferences.getBool("relay1State", false);
+  relay2State = preferences.getBool("relay2State", false);
+  relay3State = preferences.getBool("relay3State", false);
+  relay4State = preferences.getBool("relay4State", false);
+  preferences.end();
+}
+
 BLYNK_WRITE(V1){
-  int pinValue = param.asInt(); // assigning incoming value from pin V1 to a variable
-  Serial.print("V1 value is: ");
-  Serial.println(pinValue);
-  if (pinValue == 0 ) {
-    digitalWrite(RLY1, LOW);
-    relay1State = pinValue;
-  } else {
-    digitalWrite(RLY1, HIGH);
-    relay1State = pinValue;
-  }
-  //
+  int pinValue = param.asInt();
+  relay1State = (pinValue == 0);
+  digitalWrite(RLY1, relay1State ? LOW : HIGH);
+  saveRelayState();
+  // Update ThingsBoard status
+  StaticJsonDocument<200> doc;
+  doc["method"] = "setRelay1";
+  doc["params"] = relay1State;
+  char buffer[200];
+  size_t n = serializeJson(doc, buffer);
+  tb.publish("v1/devices/me/rpc/request/+", buffer, n);
 }
 
 BLYNK_WRITE(V2){
-  int pinValue = param.asInt(); // assigning incoming value from pin V1 to a variable
-  Serial.print("V2 value is: ");
-  Serial.println(pinValue);
-  if (pinValue == 0 ) {
-    digitalWrite(RLY2, LOW);
-    relay2State = pinValue;
-  } else {
-    digitalWrite(RLY2, HIGH);
-    relay2State = pinValue;
-  }
-  //
+  int pinValue = param.asInt();
+  relay2State = (pinValue == 0);
+  digitalWrite(RLY2, relay2State ? LOW : HIGH);
+  saveRelayState();
+  // Update ThingsBoard status
+  StaticJsonDocument<200> doc;
+  doc["method"] = "setRelay2";
+  doc["params"] = relay2State;
+  char buffer[200];
+  size_t n = serializeJson(doc, buffer);
+  tb.publish("v1/devices/me/rpc/request/+", buffer, n);
 }
 
 BLYNK_WRITE(V3){
-  int pinValue = param.asInt(); // assigning incoming value from pin V1 to a variable
-  Serial.print("V3 value is: ");
-  Serial.println(pinValue);
-  if (pinValue == 0 ) {
-    digitalWrite(RLY3, LOW);
-    relay3State = pinValue;
-  } else {
-    digitalWrite(RLY3, HIGH);
-    relay3State = pinValue;
-  }
-  //
+  int pinValue = param.asInt();
+  relay3State = (pinValue == 0);
+  digitalWrite(RLY3, relay3State ? LOW : HIGH);
+  saveRelayState();
+  // Update ThingsBoard status
+  StaticJsonDocument<200> doc;
+  doc["method"] = "setRelay3";
+  doc["params"] = relay3State;
+  char buffer[200];
+  size_t n = serializeJson(doc, buffer);
+  tb.publish("v1/devices/me/rpc/request/+", buffer, n);
 }
 
 BLYNK_WRITE(V4){
-  int pinValue = param.asInt(); // assigning incoming value from pin V1 to a variable
-  Serial.print("V4 value is: ");
-  Serial.println(pinValue);
-  if (pinValue == 0 ) {
-    digitalWrite(RLY4, LOW);
-    relay4State = pinValue;
-  } else {
-    digitalWrite(RLY4, HIGH);
-    relay4State = pinValue;
-  }
-  //
+  int pinValue = param.asInt();
+  relay4State = (pinValue == 0);
+  digitalWrite(RLY4, relay4State ? LOW : HIGH);
+  saveRelayState();
+  // Update ThingsBoard status
+  StaticJsonDocument<200> doc;
+  doc["method"] = "setRelay4";
+  doc["params"] = relay4State;
+  char buffer[200];
+  size_t n = serializeJson(doc, buffer);
+  tb.publish("v1/devices/me/rpc/request/+", buffer, n);
 }
 
 void setup() {
@@ -96,10 +115,12 @@ void setup() {
   pinMode(RLY3, OUTPUT);
   pinMode(RLY4, OUTPUT);
 
-  digitalWrite(RLY1, HIGH);
-  digitalWrite(RLY2, HIGH);
-  digitalWrite(RLY3, HIGH);
-  digitalWrite(RLY4, HIGH);
+  loadRelayState();
+
+  digitalWrite(RLY1, relay1State ? LOW : HIGH);
+  digitalWrite(RLY2, relay2State ? LOW : HIGH);
+  digitalWrite(RLY3, relay3State ? LOW : HIGH);
+  digitalWrite(RLY4, relay4State ? LOW : HIGH);
   
   timer1.register_callback(getsensors);
 
@@ -136,7 +157,6 @@ void loop() {
 }
 
 void getsensors(){
-  // Create JSON object
   Serial.println("[RUN] getsensors");
   StaticJsonDocument<500> doc;
   doc["luxVal"] = luxVal;
@@ -148,16 +168,13 @@ void getsensors(){
   doc["Temperature"] = temperature;
   doc["Humidity"] = humidity;
 
-  // 
   Serial.println("[RUN] Blynk send temperature");
   Serial.println(temperature);
   Blynk.virtualWrite(V5, temperature);
 
-  // Serialize JSON to string
   char buffer[500];
   size_t n = serializeJson(doc, buffer);
 
-  // Publish the JSON payload to ThingsBoard
   Serial.print("Publishing payload: ");
   Serial.println(buffer);
 
@@ -168,7 +185,6 @@ void getsensors(){
   }
 }
 
-// RTC
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println("-- [Debug] On message Callback from thingboard");
 
@@ -197,34 +213,31 @@ void callback(char* topic, byte* payload, unsigned int length) {
   if (methodName.equals("setRelay1")) {
     digitalWrite(RLY1, params ? LOW : HIGH);
     relay1State = params;
-    Blynk.virtualWrite(V1, 0);
+    saveRelayState();
+    Blynk.virtualWrite(V1, params ? 0 : 1); // Update Blynk status
   }
   if (methodName.equals("setRelay2")) {
-  if (params) {
-    digitalWrite(RLY2, LOW);
-    Blynk.virtualWrite(V2, 0);
-    relay2State = true;
-  } else {
-    digitalWrite(RLY2, HIGH);
-    Blynk.virtualWrite(V2, 1);
-    relay2State = false;
+    digitalWrite(RLY2, params ? LOW : HIGH);
+    relay2State = params;
+    saveRelayState();
+    Blynk.virtualWrite(V2, params ? 0 : 1); // Update Blynk status
   }
-}
-
   if (methodName.equals("setRelay3")) {
     digitalWrite(RLY3, params ? LOW : HIGH);
     relay3State = params;
+    saveRelayState();
+    Blynk.virtualWrite(V3, params ? 0 : 1); // Update Blynk status
   }
   if (methodName.equals("setRelay4")) {
     digitalWrite(RLY4, params ? LOW : HIGH);
     relay4State = params;
+    saveRelayState();
+    Blynk.virtualWrite(V4, params ? 0 : 1); // Update Blynk status
   }
 
-  // Add get state functionality
   if (methodName.equals("getRelayState")) {
     String responseTopic = String(topic);
     responseTopic.replace("request", "response");
-    
 
     StaticJsonDocument<200> responseDoc;
     responseDoc["relay1State"] = relay1State;
@@ -240,7 +253,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.println(responseBuffer);
   }
 }
-
 // func update status blynk and thingsboard &set status to mem peferance.h 
 // how to use peferance.h ประมาณ 3 ไฟล์
 // เขียนครอบ func 
